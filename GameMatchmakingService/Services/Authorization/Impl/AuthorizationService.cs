@@ -1,6 +1,7 @@
 using System.Net;
 using GameMatchmakingService.Models;
 using GameMatchmakingService.Services.HttpClient;
+using Newtonsoft.Json;
 
 namespace GameMatchmakingService.Services.Authorization.Impl;
 
@@ -15,16 +16,16 @@ public class AuthorizationService : IAuthorizationService
     
     public async Task<bool> AuthorizeAsync(PlayerInfo playerInfo)
     {
-        var checkBody = new Dictionary<string, string>()
-        {
-            { "Login", $"{playerInfo.Login}" },
-            { "Token", $"{playerInfo.Token}" }
-        };
+        var json = JsonConvert.SerializeObject(playerInfo);
+        // var checkBody = new Dictionary<string, string>()
+        // {
+        //     { "PlayerInfo", $"{json}" },
+        // };
 
         var checkAuth = await _httpClientService.SendRequestAsync(
-            HttpMethod.Get,
-            Utils.Services.AuthenticationServiceUrl,
-            checkBody);
+            HttpMethod.Post,
+            Utils.Services.AuthenticationServiceUrl + "/Account/Validate",
+            json);
         
         return checkAuth.StatusCode == HttpStatusCode.OK;
     }

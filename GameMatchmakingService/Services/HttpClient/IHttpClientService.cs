@@ -5,6 +5,5 @@ public interface IHttpClientService
     Task<HttpResponseMessage> SendRequestAsync(
         HttpMethod method, 
         string url, 
-        IEnumerable<KeyValuePair<string, string>> body
-        );
+        string body);
 }
