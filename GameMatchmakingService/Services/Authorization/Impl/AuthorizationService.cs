@@ -17,14 +17,10 @@ public class AuthorizationService : IAuthorizationService
     public async Task<bool> AuthorizeAsync(PlayerInfo playerInfo)
     {
         var json = JsonConvert.SerializeObject(playerInfo);
-        // var checkBody = new Dictionary<string, string>()
-        // {
-        //     { "PlayerInfo", $"{json}" },
-        // };
-
+        
         var checkAuth = await _httpClientService.SendRequestAsync(
             HttpMethod.Post,
-            Utils.Services.AuthenticationServiceUrl + "/Account/Validate",
+            Utils.Services.AuthenticationServiceValidateUrl,
             json);
         
         return checkAuth.StatusCode == HttpStatusCode.OK;

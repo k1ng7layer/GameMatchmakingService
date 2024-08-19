@@ -1,6 +1,7 @@
 using System.Net;
 using GameMatchmakingService.Models;
 using GameMatchmakingService.Services.Authorization;
+using GameMatchmakingService.Services.GameQueue;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -11,13 +12,18 @@ namespace GameMatchmakingService.Controllers;
 public class MatchController : ControllerBase
 {
     private readonly IAuthorizationService _authorizationService;
+    private readonly IGameQueueService _gameQueueService;
 
-    public MatchController(IAuthorizationService authorizationService)
+    public MatchController(
+        IAuthorizationService authorizationService, 
+        IGameQueueService gameQueueService
+    )
     {
         _authorizationService = authorizationService;
+        _gameQueueService = gameQueueService;
     }
     
-    [HttpPost, Route("Enqueue")]
+    [HttpPost, Route("enqueue")]
     public async Task<IActionResult> Enqueue([FromBody] PlayerInfo playerInfo)
     {
         using var reader = new StreamReader(HttpContext.Request.Body);
@@ -25,14 +31,16 @@ public class MatchController : ControllerBase
         
         await reader.ReadAsync(memory);
         
-        var body = memory.ToString();
-        //var playerInfo = JsonConvert.DeserializeObject<PlayerInfo>(body);
-
         if (playerInfo == null)
             return StatusCode(400);
         
         var authorized = await _authorizationService.AuthorizeAsync(playerInfo);
         
-        return authorized ? Ok() : Unauthorized();
+        if (!authorized)
+            return Unauthorized();
+        
+        _gameQueueService.Enqueue(playerInfo.Login);
+
+        return Ok();
     }
 }
