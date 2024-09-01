@@ -1,7 +1,13 @@
 namespace GameMatchmakingService.Models;
 
-public class PlayerInfo
+public readonly struct PlayerInfo
 {
-    public string Login { get; set; }
-    public string Token { get; set; }
+    public readonly string Login;
+    public readonly string Token;
+
+    public PlayerInfo(string login, string token)
+    {
+        Login = login;
+        Token = token;
+    }
 }

@@ -51,19 +51,6 @@ public class MatchController : ControllerBase
         if (!HttpContext.WebSockets.IsWebSocketRequest)
             return BadRequest();
         
-        
-        using var reader = new StreamReader(HttpContext.Request.Body);
-        var memory = new Memory<char>(new char[1024]); 
-        
-        await reader.ReadAsync(memory);
-        
-        if (playerInfo == null)
-            return StatusCode(400);
-        
-        var authorized = await _authorizationService.AuthorizeAsync(playerInfo);
-        
-        if (!authorized)
-            return Unauthorized();
 
         using var socket = await HttpContext.WebSockets.AcceptWebSocketAsync();
         socket.p

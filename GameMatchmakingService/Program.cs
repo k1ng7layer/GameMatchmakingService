@@ -1,3 +1,4 @@
+using GameMatchmakingService.Middlewares;
 using GameMatchmakingService.Services.Authorization;
 using GameMatchmakingService.Services.Authorization.Impl;
 using GameMatchmakingService.Services.HttpClient;
@@ -26,6 +27,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+app.UseMiddleware<CustomAuthorizationMiddleware>();
 
 app.MapControllers();
 app.UseWebSockets();
